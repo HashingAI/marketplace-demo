@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner CRM · Escondido World Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .cols { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+    .chart-box { position: relative; height: 290px; }
+    .heat { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+    .heat i { aspect-ratio: 1; border-radius: 5px; display: block; }
+    .app { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .app:last-child { border-bottom: 0; }
+    .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tools .in { width: auto; min-height: 44px; }
+    @media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="dot">EW</span>Escondido World Marketplace</a>
+    <nav id="nav" data-on="crm"></nav>
+  </header>
+
+  <main class="wrap">
+    <div class="row" style="margin-bottom:18px">
+      <div>
+        <h1>Good morning</h1>
+        <p class="muted" style="margin:0">Every number on this page comes from the same ledger. Click any vendor to see their history.</p>
+      </div>
+      <span class="spacer"></span>
+      <div class="chips" id="range"></div>
+    </div>
+
+    <div class="grid g5" id="kpis" style="margin-bottom:16px"></div>
+
+    <div class="cols" style="margin-bottom:16px">
+      <div class="card">
+        <div class="row"><h3 style="margin:0">Revenue by market day</h3><span class="spacer"></span><span class="small muted" id="revNote"></span></div>
+        <div class="chart-box" style="margin-top:12px"><canvas id="revChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Where bookings come from</h3>
+        <p class="small muted">Upcoming 30 days</p>
+        <div class="chart-box" style="height:250px"><canvas id="chanChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="cols" style="margin-bottom:16px">
+      <div class="card">
+        <div class="row"><h3 style="margin:0">Occupancy · <span id="occDay"></span></h3><span class="spacer"></span><span class="badge green" id="occPct"></span></div>
+        <p class="small muted">Each square is one space. Darker = booked.</p>
+        <div class="heat" id="heat"></div>
+        <div class="row small muted" style="margin-top:12px;gap:18px" id="occZones"></div>
+      </div>
+      <div class="card">
+        <div class="row"><h3 style="margin:0">Applications to review</h3><span class="spacer"></span><span class="badge amber" id="appCount"></span></div>
+        <div id="apps"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:12px">
+        <h3 style="margin:0">Vendors</h3><span class="spacer"></span>
+        <button class="btn sm dark" id="export">⬇ Export to Excel (CSV)</button>
+      </div>
+      <div class="tools">
+        <input class="in" id="vq" placeholder="Search name, business, phone" style="flex:1;min-width:220px" />
+        <select class="in" id="vcat"><option value="">All categories</option></select>
+        <select class="in" id="vpermit">
+          <option value="">All permits</option>
+          <option value="valid">Permit valid</option>
+          <option value="expiring">Permit expiring</option>
+          <option value="missing">Permit missing</option>
+          <option value="review">In review</option>
+        </select>
+      </div>
+      <div style="overflow:auto">
+        <table class="t">
+          <thead><tr><th>Vendor</th><th>Category</th><th>Permit</th><th>Visits</th><th>Absent</th><th>Spent</th><th>Last seen</th><th>Next</th></tr></thead>
+          <tbody id="vrows"></tbody>
+        </table>
+      </div>
+      <p class="small muted" id="vcount" style="margin:10px 0 0"></p>
+    </div>
+  </main>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer"></aside>
+
+  <script src="data.js"></script>
+  <script src="crm.js"></script>
+</body>
+</html>

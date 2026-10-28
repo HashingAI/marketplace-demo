@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Check-in Dashboard · Escondido World Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .search { position: relative; flex: 1; min-width: 260px; }
+    .search input { min-height: 64px; font-size: 1.2rem; padding-left: 54px; border-radius: 16px; }
+    .search .ic { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px; }
+    .tab { min-height: 48px; padding: 0 18px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; font: inherit; font-weight: 700; cursor: pointer; color: var(--ink); display: inline-flex; align-items: center; gap: 8px; }
+    .tab .n { min-width: 26px; height: 26px; border-radius: 999px; background: #efede7; display: inline-grid; place-items: center; font-size: .85rem; padding: 0 7px; }
+    .tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .tab.on .n { background: rgba(255,255,255,.2); }
+    .tab.warn .n { background: var(--amber-soft); color: var(--amber); }
+    .tab.on.warn .n { background: var(--amber); color: #fff; }
+    .progress { height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; margin-bottom: 16px; }
+    .progress i { display: block; height: 100%; background: var(--green); transition: width .3s; }
+
+    .banner { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 16px; border-radius: 14px; background: var(--amber-soft); color: #6d4c00; margin-bottom: 14px; }
+
+    .list { display: grid; gap: 8px; }
+    .item { display: grid; grid-template-columns: 72px 1fr auto; gap: 16px; align-items: center; padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 16px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+    .item:hover { border-color: #cfc9bc; box-shadow: var(--shadow); }
+    .item.here { background: #f6fcf9; border-color: #cde9da; }
+    .item.gone { opacity: .5; }
+    .sc { font-size: 1.3rem; font-weight: 700; border-radius: 12px; height: 60px; display: grid; place-items: center; }
+    .sc.premium { background: var(--premium); } .sc.shaded { background: var(--shaded); } .sc.open { background: var(--open); }
+    .nm { font-weight: 700; font-size: 1.12rem; }
+    .who { color: var(--muted); font-size: .92rem; margin-top: 2px; }
+    .flag { display: inline-block; margin-left: 8px; font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; vertical-align: 2px; }
+    .flag.m { background: var(--accent-soft); color: var(--accent); }
+    .flag.w { background: var(--red-soft); color: var(--red); }
+    .act { min-width: 210px; display: flex; justify-content: flex-end; }
+    .act .btn { min-height: 56px; min-width: 200px; font-size: 1.02rem; }
+    .btn.cash { background: var(--amber); border-color: var(--amber); color: #fff; }
+    .done { min-width: 200px; text-align: right; color: var(--green); font-weight: 700; }
+    .done small { display: block; color: var(--muted); font-weight: 600; }
+    .empty { text-align: center; padding: 40px; color: var(--muted); }
+
+    /* drawer */
+    .dh { display: flex; gap: 14px; align-items: center; }
+    .dsec { margin-top: 20px; }
+    .dsec h3 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
+    .kv { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f1eee8; font-size: .95rem; }
+    .kv span:first-child { color: var(--muted); }
+    .dots { display: flex; gap: 4px; flex-wrap: wrap; }
+    .dots i { width: 14px; height: 14px; border-radius: 4px; background: var(--green); display: block; }
+    .dots i.x { background: var(--red); } .dots i.f { background: var(--line); }
+    .explain { background: #f7f6f2; border-radius: 12px; padding: 12px 14px; font-size: .9rem; }
+
+    /* pay modal */
+    .amt { font-size: 2.6rem; font-weight: 700; text-align: center; letter-spacing: -.02em; }
+    .bills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+    .bills button { min-height: 52px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    .bills button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .change { text-align: center; font-size: 1.2rem; margin-top: 12px; }
+
+    @media (max-width: 800px) {
+      .item { grid-template-columns: 58px 1fr; }
+      .act, .done { grid-column: 1 / -1; min-width: 0; }
+      .act .btn { width: 100%; }
+      .done { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="dot">EW</span>Escondido World Marketplace</a>
+    <nav id="nav" data-on="checkin"></nav>
+  </header>
+
+  <main class="wrap">
+    <div class="head">
+      <button class="btn daynav" id="prev" aria-label="Previous market day">‹</button>
+      <button class="datebtn" id="dateBtn"></button>
+      <button class="btn daynav" id="next" aria-label="Next market day">›</button>
+      <span class="spacer"></span>
+      <button class="btn primary lg" id="walkin">＋ Walk-in vendor</button>
+    </div>
+    <p class="small muted" style="margin:-6px 0 14px">Manager view of every vendor today. At the gate, staff use the <a href="scan.html">Gate scanner</a> instead.</p>
+
+    <div class="search">
+      <span class="ic">🔎</span>
+      <input class="in" id="q" placeholder="Space, business, name, phone, or scan QR code" autocomplete="off" />
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="progress"><i id="bar"></i></div>
+    <div id="banner"></div>
+    <div class="list" id="list"></div>
+  </main>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer"></aside>
+  <div class="modal card" id="modal"></div>
+
+  <script src="data.js"></script>
+  <script src="checkin.js"></script>
+</body>
+</html>

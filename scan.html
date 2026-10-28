@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Gate Scanner · Escondido World Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body { background: #17160f; }
+    .top { background: rgba(23,22,15,.92); border-color: #2c2b24; }
+    .top .brand { color: #fff; }
+    .top nav a { color: #a19d90; }
+    .top nav a.on, .top nav a:hover { background: #2c2b24; color: #fff; box-shadow: none; }
+    .phone { max-width: 480px; margin: 0 auto; padding: 16px; color: #fff; }
+
+    .status { display: flex; gap: 8px; align-items: center; font-size: .85rem; color: #a19d90; margin-bottom: 12px; flex-wrap: wrap; }
+    .status b { color: #fff; }
+    .pill { background: #2c2b24; border-radius: 999px; padding: 6px 12px; }
+
+    .finder { position: relative; aspect-ratio: 1; border-radius: 28px; background: radial-gradient(circle at 50% 40%, #2d2b22, #11100b); overflow: hidden; }
+    .finder #reader { position: absolute; inset: 0; }
+    .finder #reader video { object-fit: cover; width: 100% !important; height: 100% !important; }
+    .frame { position: absolute; inset: 18%; border-radius: 22px; pointer-events: none; }
+    .frame i { position: absolute; width: 46px; height: 46px; border: 5px solid #fff; }
+    .frame i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; border-radius: 18px 0 0 0; }
+    .frame i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; border-radius: 0 18px 0 0; }
+    .frame i:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 18px; }
+    .frame i:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; border-radius: 0 0 18px 0; }
+    .laser { position: absolute; left: 20%; right: 20%; height: 3px; background: var(--accent); box-shadow: 0 0 16px var(--accent); border-radius: 3px; animation: sweep 2s ease-in-out infinite; }
+    @keyframes sweep { 0%, 100% { top: 22%; } 50% { top: 76%; } }
+    .hint { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; font-size: .92rem; color: #d8d4c8; }
+    .hint .k { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin: 0 4px 0 10px; }
+
+    .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .tools .btn { background: #2c2b24; border-color: #3a382f; color: #fff; }
+    .manual { display: flex; gap: 8px; margin-top: 10px; }
+    .manual input { background: #2c2b24; border-color: #3a382f; color: #fff; }
+    .demo { margin-top: 16px; padding: 12px; border: 1.5px dashed #6a58b8; border-radius: 16px; background: #221d36; }
+    .demo .t { color: #c9bcff; font-weight: 700; font-size: .85rem; margin-bottom: 8px; }
+    .demo .chips { gap: 6px; }
+    .demo .chip { background: #2f2948; border-color: #4a4070; color: #e6e0ff; min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .demo .dg + .dg { margin-top: 10px; padding-top: 10px; border-top: 1px solid #3a3260; }
+    .demo .dl { font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #a89fd6; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .demo .dl .k { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+    .hist { margin-top: 16px; }
+    .hist div { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #2c2b24; font-size: .88rem; color: #d8d4c8; }
+    .hist i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .hist time { margin-left: auto; color: #807c70; font-size: .78rem; }
+
+    /* result sheet */
+    .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; max-width: 520px; margin: 0 auto; background: #fff; color: var(--ink); border-radius: 28px 28px 0 0; transform: translateY(105%); transition: transform .25s cubic-bezier(.2,.9,.3,1); max-height: 92vh; overflow: auto; box-shadow: 0 -20px 60px rgba(0,0,0,.4); }
+    .sheet.show { transform: none; }
+    .verdict { padding: 22px 22px 18px; color: #fff; border-radius: 28px 28px 0 0; display: flex; gap: 14px; align-items: center; }
+    .verdict .ic { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 1.9rem; flex: none; }
+    .verdict h2 { margin: 0; font-size: 1.5rem; }
+    .verdict p { margin: 2px 0 0; opacity: .92; }
+    .v-green { background: var(--green); } .v-amber { background: #d99a06; } .v-red { background: var(--red); }
+    .sbody { padding: 18px 22px 26px; }
+    .vhead { display: flex; gap: 14px; align-items: center; }
+    .sc { width: 74px; height: 64px; border-radius: 14px; display: grid; place-items: center; font-size: 1.35rem; font-weight: 800; flex: none; }
+    .sc.premium { background: var(--premium); } .sc.shaded { background: var(--shaded); } .sc.open { background: var(--open); }
+    .kv { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f1eee8; }
+    .kv span:first-child { color: var(--muted); }
+    .check { display: flex; gap: 12px; align-items: center; padding: 14px; border: 2px solid var(--line); border-radius: 14px; margin-top: 12px; cursor: pointer; font-weight: 600; }
+    .check input { width: 26px; height: 26px; accent-color: var(--green); flex: none; }
+    .check.warn { border-color: #f0c860; background: var(--amber-soft); }
+    .acts { display: grid; gap: 10px; margin-top: 16px; }
+    .acts .btn { min-height: 62px; font-size: 1.12rem; border-radius: 16px; }
+    .btn.cash { background: var(--amber); border-color: var(--amber); color: #fff; }
+    .big-n { font-size: 4rem; font-weight: 800; text-align: center; line-height: 1; margin: 6px 0; }
+
+    .mini { display: grid; grid-template-columns: 20px repeat(14, 1fr); gap: 3px; margin-top: 8px; }
+    .mini .rl { font-size: .7rem; font-weight: 700; color: var(--muted); }
+    .mini button { aspect-ratio: 1; border: 0; border-radius: 5px; font: inherit; font-size: .55rem; font-weight: 700; cursor: pointer; padding: 0; }
+    .mini button.premium { background: var(--premium); } .mini button.shaded { background: var(--shaded); } .mini button.open { background: var(--open); }
+    .mini button:disabled { background: #eeebe4; color: #c2bdb2; cursor: not-allowed; }
+    .mini button.cur { outline: 3px solid var(--ink); }
+    .mini button.sel { background: var(--ink); color: #fff; }
+    .mini .gap { grid-column: 1 / -1; height: 6px; }
+
+    .amt { font-size: 2.8rem; font-weight: 800; text-align: center; }
+    .bills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+    .bills button { min-height: 54px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    .bills button.on { background: var(--ink); color: #fff; }
+    .tap { text-align: center; padding: 22px; border: 2px dashed var(--line); border-radius: 18px; margin-top: 12px; }
+    .tap .w { font-size: 3rem; animation: pulse 1.4s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.12); } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="dot">EW</span>Escondido World Marketplace</a>
+    <nav id="nav" data-on="scan"></nav>
+  </header>
+
+  <main class="phone">
+    <div class="status" id="status"></div>
+
+    <div class="finder">
+      <div id="reader"></div>
+      <div class="frame"><i></i><i></i><i></i><i></i></div>
+      <div class="laser" id="laser"></div>
+      <div class="hint">Point at the QR code<br><span class="k" style="background:#ffd34d"></span>Vendor <span class="k" style="background:#fff"></span>Visitor</div>
+    </div>
+
+    <div class="tools">
+      <button class="btn lg" id="cam">📷 Use camera</button>
+      <button class="btn lg" id="typeBtn">⌨️ Type code</button>
+      <button class="btn lg" id="sell" style="grid-column:1 / -1;background:var(--accent);border-color:var(--accent)">🎟 No ticket? Sell at the gate</button>
+    </div>
+    <div class="manual hidden" id="manual">
+      <input class="in" id="code" placeholder="EW-123456 or ticket ID" autocomplete="off" />
+      <button class="btn primary" id="codeGo">Go</button>
+    </div>
+
+    <div class="demo">
+      <div class="t">🧪 Demo: pretend to scan</div>
+      <div id="demo">
+        <div class="dg">
+          <div class="dl"><span class="k" style="background:#ffd34d"></span>Vendor pass</div>
+          <div class="chips">
+            <button class="chip" data-sim="paid">✓ Paid</button>
+            <button class="chip" data-sim="owes">💵 Owes money</button>
+            <button class="chip" data-sim="first">🪪 First time</button>
+            <button class="chip" data-sim="permit">📄 Permit issue</button>
+            <button class="chip" data-sim="again">⛔ Scanned twice</button>
+          </div>
+        </div>
+        <div class="dg">
+          <div class="dl"><span class="k" style="background:#fff"></span>Visitor ticket</div>
+          <div class="chips">
+            <button class="chip" data-sim="ticket">✓ Paid</button>
+            <button class="chip" data-sim="unpaid">✕ Unpaid</button>
+            <button class="chip" data-sim="used">⛔ Already used</button>
+          </div>
+        </div>
+        <div class="dg">
+          <div class="dl">Any code</div>
+          <div class="chips">
+            <button class="chip" data-sim="wrongday">📅 Wrong day</button>
+            <button class="chip" data-sim="fake">❓ Unknown code</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist" id="hist"></div>
+  </main>
+
+  <div class="scrim" id="scrim"></div>
+  <section class="sheet" id="sheet"></section>
+
+  <script src="data.js"></script>
+  <script src="scan.js"></script>
+</body>
+</html>

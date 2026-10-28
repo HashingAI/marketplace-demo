@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visitor Tickets · Escondido World Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <style>
+    .shell { max-width: 520px; margin: 0 auto; }
+    .hero { text-align: center; padding: 10px 0 18px; }
+    .hero h1 { font-size: 2rem; }
+    .stepper { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .stepper .lbl { flex: 1; }
+    .stepper .lbl b { font-size: 1.1rem; }
+    .round { width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; font-size: 1.5rem; cursor: pointer; font-weight: 700; }
+    .round:disabled { opacity: .35; cursor: not-allowed; }
+    .num { width: 40px; text-align: center; font-size: 1.5rem; font-weight: 700; }
+    .apple { background: #000; color: #fff; border-color: #000; font-size: 1.15rem; }
+    .totalrow { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 700; margin: 18px 0; }
+    .datebtn { width: 100%; justify-content: space-between; }
+
+    .tix { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 4px 14px; }
+    .tk { flex: 0 0 280px; scroll-snap-align: center; background: #fff; border: 1.5px solid var(--line); border-radius: 22px; padding: 20px; text-align: center; box-shadow: var(--shadow); position: relative; }
+    .tk::before, .tk::after { content: ""; position: absolute; top: 58%; width: 22px; height: 22px; border-radius: 50%; background: var(--bg); }
+    .tk::before { left: -12px; } .tk::after { right: -12px; }
+    .tk .kind { font-size: .75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .tk .date { font-weight: 700; font-size: 1.1rem; margin: 4px 0 12px; }
+    .tk .id { font-size: .8rem; color: var(--muted); margin-top: 8px; }
+    .tk.used { opacity: .5; }
+    .tk.used .stamp { display: block; }
+    .stamp { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-14deg); border: 3px solid var(--red); color: var(--red); font-weight: 800; padding: 6px 14px; border-radius: 10px; font-size: 1.2rem; background: rgba(255,255,255,.85); }
+    .dotsnav { text-align: center; color: var(--muted); font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="dot">EW</span>Escondido World Marketplace</a>
+    <nav id="nav" data-on="tickets"></nav>
+  </header>
+
+  <main class="wrap">
+    <div class="shell">
+      <section id="buy">
+        <div class="hero">
+          <h1>Skip the cash line</h1>
+          <p class="muted">Buy your entry on your phone. Show the QR code at the gate.</p>
+        </div>
+        <div class="card">
+          <label class="f" style="margin-top:0">Which day?</label>
+          <button class="datebtn" id="dateBtn"></button>
+
+          <div style="margin-top:14px">
+            <div class="stepper">
+              <div class="lbl"><b>Adults</b><div class="small muted" id="pAdult"></div></div>
+              <button class="round" data-d="adult" data-s="-1" aria-label="One less adult">−</button>
+              <span class="num" id="nAdult">1</span>
+              <button class="round" data-d="adult" data-s="1" aria-label="One more adult">+</button>
+            </div>
+            <div class="stepper">
+              <div class="lbl"><b>Children</b><div class="small muted">Under 12 · free</div></div>
+              <button class="round" data-d="child" data-s="-1" aria-label="One less child">−</button>
+              <span class="num" id="nChild">0</span>
+              <button class="round" data-d="child" data-s="1" aria-label="One more child">+</button>
+            </div>
+          </div>
+
+          <div class="totalrow"><span>Total</span><span id="total">$0</span></div>
+          <div class="grid" style="gap:10px">
+            <button class="btn lg apple" data-pay="Apple Pay"> Pay</button>
+            <button class="btn lg" data-pay="Google Pay"><b style="color:#4285f4">G</b>&nbsp;Pay</button>
+            <button class="btn lg" data-pay="Card">💳 Card</button>
+          </div>
+          <p class="small muted" style="text-align:center;margin:12px 0 0">One QR code per person. Valid for the day you pick. Paying cash? Just come to the gate. Staff take your cash and give you your QR there.</p>
+        </div>
+        <p style="text-align:center;margin-top:16px"><button class="btn sm" id="mine">🎟 My tickets</button></p>
+      </section>
+
+      <section id="done" class="hidden"></section>
+    </div>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="tickets.js"></script>
+</body>
+</html>

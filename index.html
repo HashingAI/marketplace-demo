@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Escondido World Marketplace · Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .hero { padding: 40px 0 30px; max-width: 720px; }
+    .hero h1 { font-size: 2.6rem; line-height: 1.1; }
+    .tile { display: block; text-decoration: none; transition: transform .12s, box-shadow .12s; }
+    .tile:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,.08); }
+    .tile .e { font-size: 2rem; }
+    .who { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="dot">EW</span>Escondido World Marketplace</a>
+    <nav id="nav" data-on=""></nav>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <span class="badge accent">Clickable prototype</span>
+      <h1 style="margin-top:14px">Rent a space. Sell on the weekend.</h1>
+      <p class="muted" style="font-size:1.1rem">Wednesday, Friday, Saturday and Sunday in Escondido. Pick your spot online, pay from your phone, skip the line.</p>
+      <div class="row" style="margin-top:20px">
+        <a class="btn primary lg" href="booking.html">See open spaces</a>
+        <a class="btn lg" href="tel:7602337703">📞 (760) 233-7703</a>
+      </div>
+    </section>
+
+    <div class="grid g3">
+      <a class="card tile" href="booking.html"><div class="e">🗺️</div><div class="who">Vendor</div><h3>Reserve</h3><p class="muted small">Pick dates and a spot on the map, then sign in, upload documents, pay, and get a yellow QR pass.</p></a>
+      <a class="card tile" href="tickets.html"><div class="e">🎟️</div><div class="who">Visitor</div><h3>Buy tickets</h3><p class="muted small">Pay by phone, or pay cash at the gate. Everyone gets a QR.</p></a>
+      <a class="card tile" href="scan.html"><div class="e">📷</div><div class="who">Gatekeeper</div><h3>Gate scanner</h3><p class="muted small">Scan every code. Collect cash, sell at the gate, move vendors.</p></a>
+      <a class="card tile" href="checkin.html"><div class="e">🗂️</div><div class="who">Manager</div><h3>Check-in dashboard</h3><p class="muted small">Every vendor today, owes money, no-shows, fixes.</p></a>
+      <a class="card tile" href="crm.html"><div class="e">📊</div><div class="who">Owner</div><h3>CRM</h3><p class="muted small">Revenue, occupancy, approvals, vendor history, export.</p></a>
+    </div>
+
+    <p class="small muted" style="margin-top:28px">
+      Demo data lives in this browser. Try it end to end: reserve and apply as a vendor, buy a visitor ticket, then scan both in the Gate scanner.
+      <button class="btn sm" id="reset" style="margin-left:8px">Reset demo data</button>
+    </p>
+  </main>
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('reset').onclick = () => { EWM.reset(); EWM.load(); EWM.toast('Demo data reset'); };
+  </script>
+</body>
+</html>
